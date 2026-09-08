@@ -1,0 +1,10 @@
+Use case: logo-brand
+Asset type: Original raster logo mark for the website “524のお友達メーカー”; only the pictorial 524 emblem, with the Japanese site title added later as live text outside the image.
+Input images: Image 1 is a visual reference for character identity, its childlike hand-painted contours and its four-color palette. It is not the target composition.
+Primary request: Create exactly ONE distinctive compact horizontal emblem embodying this 524 character. Flatten and widen its familiar face into a coherent small header logo. Three joined off-white plump eye plates contain the orange numerals "5", "2", "4", respectively left to right, drawn with thick rounded handmade brush strokes. Keep the 5, 2 and 4 unmistakably legible at small size. A unified bright warm yellow irregular supporting silhouette hugs these plates, with two short soft head bumps above and a few rounded drips below. Put a short dark teal mouth beneath the eye plates with a subtle droop, faithful to the reference’s calm odd little expression.
+Style/medium: Flat, hand-painted playful logo art with plump imperfect contours matching the reference, smooth mostly solid colors, no outlining. The numerals are part of the creature's character design, not a word typed in a font.
+Color palette: Yellow #fedf25, orange #ff7b33, off-white #f7f7f7, dark teal #1e6b7d.
+Composition/framing: Landscape canvas around 3:2 or 2:1; wide compact unified emblem much flatter and wider than the full reference character. Fill the canvas with narrow transparent padding. High resolution. Intended to remain recognizable around 170 by 95 px on a vivid cyan site header.
+Text (verbatim): "524" only, with each digit on its own adjoining eye plate.
+Scene/backdrop: Genuinely transparent PNG background with an alpha channel outside the artwork. The cyan background in the reference must not be reproduced.
+Constraints: One emblem only. No background rectangle, no shadow, no extra text, no Japanese lettering, no additional characters, no scenery, no glossy effect, no 3D, no black outlines, no checkerboard drawn into the image. Keep the generated transparent alpha.

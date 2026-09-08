@@ -144,9 +144,10 @@ export default function Home(){
  }
 
  return <main className="maker-shell">
-  <header className="masthead"><a className="wordmark" href="/" aria-label="524のお友達メーカー"><b>524</b><span>お友達メーカー</span></a><span className="edition">はじめましてを、ひとつ。</span></header>
+  <header className="masthead"><a className="wordmark" href="/" aria-label="524のお友達メーカー"><img className="brand-mark" src="/assets/524-logo-v1.png" alt="" width={200} height={132}/><span className="wordmark-title"><span>お友達</span><span>メーカー</span></span></a><span className="edition">はじめましてを、ひとつ。</span></header>
   <div className="workspace">
    <section className="play-column" aria-label="お友達をつくる">
+    <div className="portrait-card">
     <div className={`stage ${transparent?'checker':''}`} style={background?{background}:undefined}>
      <span className="stage-label">{original?'HELLO, 524!':'HELLO, FRIEND!'}</span>
      <canvas key={motionKey} ref={canvasRef} width={1024} height={1024} className={`friend-canvas ${motionKey?'arriving':''}`} role="img" aria-label={`目が${friend.eyes}、${EAR_LABELS[friend.ear]}の耳、${MOUTH_LABELS[friend.mouth]}の口のお友達`}/>
@@ -157,6 +158,7 @@ export default function Home(){
     </div>
     <div className="generate-row"><Button className="make-button" disabled={!renderer||!!assetError||allLocked} onClick={generate}><Shuffle/>お友達をつくる</Button><Button className="undo-button" variant="outline" disabled={!state.previous} onClick={undo} aria-label="ひとつ前に戻す" title="ひとつ前に戻す"><Undo2/></Button></div>
     <p className="generation-hint">{allLocked?'全部固定中。どこかの固定をはずすと、またつくれるよ。':'気に入ったところを固定して、もうひとり。'}</p>
+    </div>
     <div className="take-home">
      {imageShareAvailable&&<Button className="wide-button image-share-button" variant="outline" onClick={shareImage} disabled={!imageReady||sharing||!renderer||!!assetError}><Share2/>{sharing?'共有画面を開いています…':!imageReady?'画像を準備しています…':'画像つきで共有'}</Button>}
      <div className="save-row"><Button className="save-image" variant="outline" onClick={saveImage} disabled={!renderer||!!assetError||saving}><Download/>{saving?'書き出し中…':'画像を保存'}</Button><a className="share-link" href={`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer">Xにポスト<ArrowUpRight size={16}/></a></div>
@@ -203,6 +205,6 @@ export default function Home(){
     <p className="rare-hint"><Sparkles size={15}/><span>固定なしでつくると、ごくまれに524本人が。<br/><span>毎回 1 / 4096 の確率で、あそびにきます。</span></span></p>
    </aside>
   </div>
-  <footer className="page-footer"><span>524と、まだ見ぬお友達。 · ver{appVersion.replace(/\.0$/, '')}</span><span>MADE FOR LITTLE ENCOUNTERS</span></footer>
+  <footer className="page-footer"><span>524と、まだ見ぬお友達。</span><span className="footer-version">ver{appVersion.replace(/\.0$/, '')}</span></footer>
  </main>;
 }
