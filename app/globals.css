@@ -2,6 +2,7 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @custom-variant dark (&:is(.dark *));
+.take-home .image-share-button[data-slot=button]{margin:0 0 12px;border-radius:12px;color:#2445d8;font-weight:700}
 @theme inline {
 --color-background:var(--background);--color-foreground:var(--foreground);--color-primary:var(--primary);--color-primary-foreground:var(--primary-foreground);--color-secondary:var(--secondary);--color-secondary-foreground:var(--foreground);--color-muted:var(--muted);--color-muted-foreground:var(--muted-foreground);--color-accent:var(--accent);--color-accent-foreground:var(--foreground);--color-border:var(--border);--color-input:var(--border);--color-ring:var(--ring);--color-popover:var(--card);--color-popover-foreground:var(--foreground);--color-card:var(--card);--color-card-foreground:var(--foreground);--color-destructive:#a72e32;--radius-lg:12px;--radius-md:10px;--radius-sm:6px;}
 :root,.dark{--background:#fcfcfa;--foreground:#242c35;--primary:#2445d8;--primary-foreground:#fff;--secondary:#eef0fb;--muted:#f2f3ef;--muted-foreground:#626975;--accent:#eef0fb;--border:#d9dcd9;--ring:#2445d8;--card:#fff;--radius:12px;}

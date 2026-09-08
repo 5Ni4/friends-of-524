@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { Shuffle, Undo2, Download, LockKeyhole, LockKeyholeOpen, Copy, Code2, ChevronDown, ArrowUpRight, Sparkles, Check } from 'lucide-react';
+import { Shuffle, Undo2, Download, LockKeyhole, LockKeyholeOpen, Copy, Code2, ChevronDown, ArrowUpRight, Sparkles, Check, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import type { Friend, LockKey, Locks } from '@/lib/friends';
 import { loadFriendRenderer } from '@/lib/render-friend';
 import type { FriendRenderer } from '@/lib/render-friend';
 import { version as appVersion } from '@/package.json';
+import { createFriendPng, canShareImage, sharePreparedImage } from '@/lib/share-image';
+import type { PreparedImage } from '@/lib/share-image';
 
 type Tool = {name:string;title:string;description:string;inputSchema:object;annotations:{readOnlyHint:boolean;untrustedContentHint:boolean};execute:(input:unknown)=>unknown};
 type ModelContext = {registerTool:(tool:Tool,options?:{signal?:AbortSignal})=>void|Promise<void>};
@@ -31,6 +33,10 @@ export default function Home(){
  const [restoreError,setRestoreError]=useState('');
  const [transparent,setTransparent]=useState(false);
  const [saving,setSaving]=useState(false);
+ const [imageShareAvailable,setImageShareAvailable]=useState<boolean|null>(null);
+ const [preparedImage,setPreparedImage]=useState<PreparedImage|null>(null);
+ const [sharing,setSharing]=useState(false);
+ const sharingRef=useRef(false);
  const [encounter,setEncounter]=useState(false);
  const [motionKey,setMotionKey]=useState(0);
  const canvasRef=useRef<HTMLCanvasElement>(null);
@@ -44,6 +50,9 @@ export default function Home(){
  const allLocked=LOCK_KEYS.every(k=>locks[k]);
  const background=transparent?null:original?'#39bad7':palette.background;
  const currentCode=exportCode(friend);
+ const shareText=original?'524本人があそびにきた！ #524のお友達メーカー':`524のお友達ができた！ 目のなかは「${friend.eyes}」 #524のお友達メーカー`;
+ const imageKey=JSON.stringify([currentCode,background]);
+ const imageReady=preparedImage?.key===imageKey;
 
  useEffect(()=>{let live=true;loadFriendRenderer().then(value=>{if(live)setRenderer(value);}).catch(e=>{if(live)setAssetError(e.message);});return()=>{live=false;};},[]);
  useEffect(()=>{
@@ -52,6 +61,20 @@ export default function Home(){
   catch(e){setAssetError(e instanceof Error?e.message:'画像を描けませんでした。');}
  },[renderer,friend,background,motionKey]);
  useEffect(()=>{setEyeDraft(friend.eyes);setEyeError('');},[friend.eyes]);
+ useEffect(()=>{
+  if(typeof navigator.share!=='function'||typeof navigator.canShare!=='function'){setImageShareAvailable(false);return;}
+  if(!renderer)return;
+  let active=true;
+  const timer=setTimeout(()=>{
+   createFriendPng(renderer,friend,background).then(file=>{
+    if(!active)return;
+    const supported=canShareImage(navigator,file);
+    setImageShareAvailable(supported);
+    setPreparedImage(supported?{key:imageKey,file,text:shareText}:null);
+   }).catch(()=>{if(active){setImageShareAvailable(false);setPreparedImage(null);}});
+  },120);
+  return()=>{active=false;clearTimeout(timer);};
+ },[renderer,friend,background,imageKey,shareText]);
 
  const apply=useCallback((next:Friend,options:{allowOriginal?:boolean;encounter?:boolean}={})=>{
   if(isOriginal(next)&&!options.allowOriginal&&!sameFriend(next,stateRef.current.friend))throw new Error('524本人には、固定なしの「お友達をつくる」から出会えるよ。');
@@ -96,14 +119,23 @@ export default function Home(){
   if(!renderer||saving)return;
   setSaving(true);setError('');
   const snapshot=friend;
-  try{const canvas=document.createElement('canvas');canvas.width=2048;canvas.height=2048;renderer.render(canvas,snapshot,background);const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('画像を書き出せませんでした。')),'image/png'));download(blob,`524-friend-${snapshot.eyes.replace(/[^0-9]/g,'x')}.png`);setMessage('画像を書き出しました。Xに投稿するときは、この画像を添付してね。');}catch(e){setError(e instanceof Error?e.message:'画像を保存できませんでした。');}finally{setSaving(false);}
+  try{const file=await createFriendPng(renderer,snapshot,background);download(file,file.name);setMessage('画像を書き出しました。Xに投稿するときは、この画像を添付してね。');}catch(e){setError(e instanceof Error?e.message:'画像を保存できませんでした。');}finally{setSaving(false);}
+ }
+ async function shareImage(){
+  if(sharingRef.current||!imageReady||!renderer||assetError)return;
+  sharingRef.current=true;setSharing(true);setError('');setMessage('');
+  try{
+   const result=await sharePreparedImage(navigator,preparedImage,imageKey);
+   if(result==='shared')setMessage('共有先へ画像を渡しました。投稿画面で画像と文章を確認してね。');
+   else if(result==='unsupported'){setImageShareAvailable(false);setMessage('この環境では画像を直接共有できません。「画像を保存」から保存して、Xで添付してね。');}
+  }catch{setError('画像を共有できませんでした。「画像を保存」から保存して、Xで添付してね。');}
+  finally{sharingRef.current=false;setSharing(false);}
  }
  async function copyCode(){
   try{await navigator.clipboard.writeText(currentCode);setMessage('この子のコードをコピーしました。');}
   catch{exportRef.current?.focus();exportRef.current?.select();setMessage('コードを選択しました。コピーして、メモに残してね。');}
  }
  function saveCode(){download(new Blob([currentCode+'\n'],{type:'text/plain;charset=utf-8'}),'524-friend-code.txt');setMessage('復元コードを書き出しました。');}
- const shareText=original?'524本人があそびにきた！ #524のお友達メーカー':`524のお友達ができた！ 目のなかは「${friend.eyes}」 #524のお友達メーカー`;
  function lockControl(field:LockKey,label:string){
   return <label className={`lock-control ${locks[field]?'is-locked':''}`}><Checkbox checked={locks[field]} onCheckedChange={checked=>toggleLock(field,checked)} aria-label={`${label}を固定`}/>{locks[field]?<LockKeyhole size={13}/>:<LockKeyholeOpen size={13}/>}<span>固定</span></label>;
  }
@@ -126,9 +158,10 @@ export default function Home(){
     <div className="generate-row"><Button className="make-button" disabled={!renderer||!!assetError||allLocked} onClick={generate}><Shuffle/>お友達をつくる</Button><Button className="undo-button" variant="outline" disabled={!state.previous} onClick={undo} aria-label="ひとつ前に戻す" title="ひとつ前に戻す"><Undo2/></Button></div>
     <p className="generation-hint">{allLocked?'全部固定中。どこかの固定をはずすと、またつくれるよ。':'気に入ったところを固定して、もうひとり。'}</p>
     <div className="take-home">
+     {imageShareAvailable&&<Button className="wide-button image-share-button" variant="outline" onClick={shareImage} disabled={!imageReady||sharing||!renderer||!!assetError}><Share2/>{sharing?'共有画面を開いています…':!imageReady?'画像を準備しています…':'画像つきで共有'}</Button>}
      <div className="save-row"><Button className="save-image" variant="outline" onClick={saveImage} disabled={!renderer||!!assetError||saving}><Download/>{saving?'書き出し中…':'画像を保存'}</Button><a className="share-link" href={`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer">Xにポスト<ArrowUpRight size={16}/></a></div>
      <div className="export-options"><label className="background-option"><Checkbox checked={transparent} onCheckedChange={setTransparent}/>背景を透明にする</label><span>PNG · 2048 × 2048</span></div>
-     <p className="small-note share-note">Xでは、保存した画像を添付してね。</p>
+     <p className="small-note share-note">{imageShareAvailable?'共有先にXがあれば選んでね。見つからない場合は、画像を保存してXで添付できます。':'画像を保存して、Xの投稿画面で添付してね。対応している端末では「画像つきで共有」も使えます。'}</p>
     </div>
     <div className="feedback" aria-live="polite" aria-atomic="true">{message&&<p className="status-message">{message}</p>}{error&&<p className="error" role="alert">{error}</p>}</div>
    </section>
