@@ -20,6 +20,8 @@ public/assets/ear-atlas-v3.png は、根元まで同じ太さのうさ耳・棒�
 
 public/assets/rabbit-ears-plump-v4.png は、ユーザー提供のピンクの子を参考に描き直した、ぽってりとしたうさ耳。丸い先端・横幅・ゆるい外向きのふくらみを優先し、参考より少し長めに頭へ重ねる。通常のうさ耳はrabbit-plumpを使い、前のrabbit-straightは復元専用で保持する。画像の淡い市松は描画時に除去し、黒い筆跡だけを透過マスクとして色付けする。
 
+public/assets/antenna-sprout-soft-v5.png は、アンテナと双葉を524の丸くゆがんだ形に合わせて描き直した素材。左に短く太い1本のアンテナ、右に丸い葉先をもつ双葉が入る。通常の選択・抽選はantenna-soft / sprout-roundを使い、以前のantenna-single / sproutは旧コードの復元用に保持する。
+
 public/assets/glyph-mouth-atlas.png は、原画をスタイル参照としてbuilt-in imagegenで生成した数字・記号と追加の口。背景の薄い市松は絵そのものに含まれるため、描画時に黒い筆跡だけをマスクとして読み取る。外側の透明度はPNG書き出しでも維持する。
 
 public/assets/mouth-atlas-v2.png は、いつもの口の左右差や垂れた端に合わせてbuilt-in imagegenで描き直した4種類の口。2×2で左上から、にこ・ぽかん・むにゃ・ちょん。通常の選択・抽選では新しい口を使い、原画の「すん」はそのまま残す。旧コードのsmile / oval / wave / beakは旧素材で復元し、新しい口には別のIDを割り当てている。

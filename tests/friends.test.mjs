@@ -59,8 +59,8 @@ test('undo restores the whole prior character once',()=>{
  assert.equal(makerReducer(undone,{type:'undo'}),undone);
  assert.equal(makerReducer(initial,{type:'apply',friend:{...INITIAL}}),initial);
 });
-test('six current head shapes generate including plump rabbit ears, single antenna and sprout',()=>{
- assert.deepEqual(EARS,['classic','bear','rabbit-plump','antenna-single','monkey','sprout']);
+test('six current head shapes generate including the soft antenna and round sprout',()=>{
+ assert.deepEqual(EARS,['classic','bear','rabbit-plump','antenna-soft','monkey','sprout-round']);
  const locks={...EMPTY_LOCKS,eyes:true,mouth:true,palette:true,bodyColor:true,eyeColor:true,mouthColor:true};
  for(let i=0;i<EARS.length;i++)assert.equal(generateFriend(INITIAL,locks,()=>i).friend.ear,EARS[i]);
 });

@@ -1,11 +1,11 @@
 export const GLYPHS = '0123456789+-★?!=';
-export const EARS = ['classic', 'bear', 'rabbit-plump', 'antenna-single', 'monkey', 'sprout'] as const;
-export const LEGACY_EARS = ['long', 'round', 'tilt', 'rabbit', 'antenna', 'rabbit-straight'] as const;
+export const EARS = ['classic', 'bear', 'rabbit-plump', 'antenna-soft', 'monkey', 'sprout-round'] as const;
+export const LEGACY_EARS = ['long', 'round', 'tilt', 'rabbit', 'antenna', 'rabbit-straight', 'antenna-single', 'sprout'] as const;
 export const MOUTHS = ['flat', 'smile-soft', 'oval-soft', 'wave-soft', 'beak-soft'] as const;
 export const LEGACY_MOUTHS = ['smile', 'oval', 'wave', 'beak'] as const;
 export type Ear = typeof EARS[number] | typeof LEGACY_EARS[number];
 export type Mouth = typeof MOUTHS[number] | typeof LEGACY_MOUTHS[number];
-export const EAR_LABELS: Record<Ear,string> = {bear:'くま耳','rabbit-plump':'うさ耳','rabbit-straight':'うさ耳','antenna-single':'アンテナ',sprout:'芽',rabbit:'うさ耳',antenna:'アンテナ',monkey:'サル耳',classic:'いつもの',long:'ながめ',round:'まるめ',tilt:'かたっぽ'};
+export const EAR_LABELS: Record<Ear,string> = {bear:'くま耳','rabbit-plump':'うさ耳','rabbit-straight':'うさ耳','antenna-soft':'アンテナ','antenna-single':'アンテナ','sprout-round':'芽',sprout:'芽',rabbit:'うさ耳',antenna:'アンテナ',monkey:'サル耳',classic:'いつもの',long:'ながめ',round:'まるめ',tilt:'かたっぽ'};
 export function isCurrentEar(ear:Ear):ear is typeof EARS[number]{return (EARS as readonly string[]).includes(ear);}
 export const MOUTH_LABELS: Record<Mouth,string> = {flat:'すん','smile-soft':'にこ','oval-soft':'ぽかん','wave-soft':'むにゃ','beak-soft':'ちょん',smile:'にこ',oval:'ぽかん',wave:'むにゃ',beak:'ちょん'};
 export function isCurrentMouth(mouth:Mouth):mouth is typeof MOUTHS[number]{return (MOUTHS as readonly string[]).includes(mouth);}
