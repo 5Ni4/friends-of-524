@@ -1,4 +1,4 @@
-export const GLYPHS = '0123456789+-★?!=';
+export const GLYPHS = '0123456789+-★?!=×÷*';
 export const EARS = ['classic', 'bear', 'rabbit-plump', 'antenna-soft', 'monkey', 'sprout-round'] as const;
 export const LEGACY_EARS = ['long', 'round', 'tilt', 'rabbit', 'antenna', 'rabbit-straight', 'antenna-single', 'sprout'] as const;
 export const MOUTHS = ['flat', 'smile-soft', 'oval-soft', 'wave-soft', 'beak-soft'] as const;
@@ -27,7 +27,7 @@ export const INITIAL:Friend = {v:1,eyes:'3?8',ear:'classic',mouth:'smile-soft',p
 export function paletteFor(id:string){return PALETTES.find(p=>p.id===id) ?? PALETTES[0];}
 export function isOriginal(f:Friend){return Object.keys(ORIGINAL).every(key=>f[key as keyof Friend]===ORIGINAL[key as keyof Friend]);}
 export function sameFriend(a:Friend,b:Friend){return Object.keys(ORIGINAL).every(key=>a[key as keyof Friend]===b[key as keyof Friend]);}
-export function normalizeEyes(text:string){return text.normalize('NFKC').replaceAll('−','-').replaceAll('*','★').replaceAll('⭐','★');}
+export function normalizeEyes(text:string){return text.normalize('NFKC').replaceAll('−','-').replaceAll('⭐','★');}
 export function validEyes(text:string){return Array.from(text).length===3 && Array.from(text).every(c=>GLYPHS.includes(c));}
 export function randomInt(max:number):number{
  if(!Number.isInteger(max)||max<1||max>0x100000000)throw new Error('抽選の範囲が正しくありません。');
@@ -42,7 +42,7 @@ export function generateFriend(current:Friend,locks:Locks,rng:Rng=randomInt):{fr
  if(LOCK_KEYS.every(k=>!locks[k]) && rng(4096)===0)return {friend:{...ORIGINAL},encounter:true};
  const keepPalette=locks.palette||locks.bodyColor||locks.eyeColor||locks.mouthColor;
  const p=keepPalette?paletteFor(current.palette):pick(PALETTES,rng);
- const pool=Array.from('01234567890123456789+-★?!=');
+ const pool=Array.from('0123456789'+GLYPHS);
  const f:Friend={v:1,palette:p.id,eyes:locks.eyes?current.eyes:Array.from({length:3},()=>pick(pool,rng)).join(''),ear:locks.ear?current.ear:pick(EARS,rng),mouth:locks.mouth?current.mouth:pick(MOUTHS,rng),bodyColor:locks.bodyColor?current.bodyColor:pick(p.body,rng),eyeColor:locks.eyeColor?current.eyeColor:pick(p.eye,rng),mouthColor:locks.mouthColor?current.mouthColor:pick(p.mouth,rng),inkColor:p.ink};
  // The original has its own draw; normal combinations cannot add to its odds.
  if(isOriginal(f)){

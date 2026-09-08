@@ -137,7 +137,7 @@ export default function Home(){
     <div className="control-section eye-section">
      <div className="section-heading"><h2><span className="step-dot">01</span>目のなか</h2>{lockControl("eyes","目の文字")}</div>
      <form className="eye-form" onSubmit={event=>{event.preventDefault();commitEyes();}}><Input className="eye-input" value={eyeDraft} maxLength={3} onChange={e=>{setEyeDraft(normalizeEyes(e.target.value));setEyeError('');}} disabled={locks.eyes} aria-label="目の3文字" aria-describedby="eye-help" aria-invalid={!!eyeError} autoComplete="off" spellCheck={false}/><Button type="submit" className="eye-apply" variant="outline" disabled={locks.eyes||eyeDraft===friend.eyes}>決定</Button></form>
-     <p id="eye-help" className="small-note">3文字固定 · 0–9 / + − ★ ? ! =</p>{eyeError&&<p className="error" role="alert">{eyeError}</p>}
+     <p id="eye-help" className="small-note">3文字固定 · 0–9 / + − × ÷ ＊ ★ ? ! =</p>{eyeError&&<p className="error" role="alert">{eyeError}</p>}
     </div>
     <div className="control-section shape-section">
      <div className="section-heading"><h2><span className="step-dot">02</span>耳・あたまのかたち</h2>{lockControl("ear","耳・あたまのかたち")}</div>

@@ -48,8 +48,9 @@ test('bad and future codes are rejected without changing state',()=>{
  assert.equal(INITIAL.eyes,'3?8');
 });
 test('three-character rules normalize fullwidth numerals and symbols',()=>{
- assert.equal(normalizeEyes('５２４'),'524');assert.equal(normalizeEyes('−*＋'),'-★+');
- for(const eyes of ['000','524','★?!','+−='].map(normalizeEyes))assert.ok(validEyes(eyes));
+ assert.equal(normalizeEyes('５２４'),'524');assert.equal(normalizeEyes('−*＋'),'-*+');
+ assert.equal(normalizeEyes('＊×÷'),'*×÷');assert.equal(normalizeEyes('⭐*★'),'★*★');
+ for(const eyes of ['000','524','★?!','+−=','×÷*','＊５÷'].map(normalizeEyes))assert.ok(validEyes(eyes));
  for(const eyes of ['','12','1234','abc','😀12'])assert.equal(validEyes(eyes),false);
 });
 test('undo restores the whole prior character once',()=>{
@@ -85,4 +86,16 @@ test('old and new mouth codes preserve their shapes and mouth locks',()=>{
  }
  assert.equal(ORIGINAL.mouth,'flat');
  assert.throws(()=>validateFriend({...INITIAL,mouth:'unknown'}));
+});
+test('new math symbols generate in all three positions and retain locks and codes',()=>{
+ const locks={...EMPTY_LOCKS,ear:true,mouth:true,palette:true,bodyColor:true,eyeColor:true,mouthColor:true};
+ const pool=Array.from('01234567890123456789+-★?!=×÷*');
+ for(const char of ['×','÷','*']){
+  const f=generateFriend(INITIAL,locks,n=>{assert.equal(n,pool.length);return pool.indexOf(char);}).friend;
+  assert.equal(f.eyes,char.repeat(3));assert.deepEqual(importCode(exportCode(f)),f);
+  assert.equal(generateFriend(f,{...EMPTY_LOCKS,eyes:true},()=>0).friend.eyes,f.eyes);
+ }
+ const star={...INITIAL,eyes:'★★★'},asterisk={...INITIAL,eyes:'***'};
+ assert.notEqual(exportCode(star),exportCode(asterisk));
+ assert.deepEqual(importCode(exportCode(star)),star);assert.deepEqual(importCode(exportCode(asterisk)),asterisk);
 });
