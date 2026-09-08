@@ -7,12 +7,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { INITIAL, EMPTY_LOCKS, LOCK_KEYS, PALETTES, EARS, MOUTHS, EAR_LABELS, MOUTH_LABELS, paletteFor, generateFriend, exportCode, importCode, isOriginal, isCurrentEar, isCurrentMouth, sameFriend, changePalette, normalizeEyes, validEyes, makerReducer } from '@/lib/friends';
 import type { Friend, LockKey, Locks } from '@/lib/friends';
 import { loadFriendRenderer } from '@/lib/render-friend';
 import type { FriendRenderer } from '@/lib/render-friend';
 import { version as appVersion } from '@/package.json';
-import { createFriendPng, canShareImage, sharePreparedImage } from '@/lib/share-image';
+import { createFriendPng, canShareImage, sharePreparedImage, canCopyImage, copyPreparedImage } from '@/lib/share-image';
 import type { PreparedImage } from '@/lib/share-image';
 
 type Tool = {name:string;title:string;description:string;inputSchema:object;annotations:{readOnlyHint:boolean;untrustedContentHint:boolean};execute:(input:unknown)=>unknown};
@@ -34,8 +35,10 @@ export default function Home(){
  const [transparent,setTransparent]=useState(false);
  const [saving,setSaving]=useState(false);
  const [imageShareAvailable,setImageShareAvailable]=useState<boolean|null>(null);
+ const [imageCopyAvailable,setImageCopyAvailable]=useState(false);
  const [preparedImage,setPreparedImage]=useState<PreparedImage|null>(null);
  const [sharing,setSharing]=useState(false);
+ const [copyingImage,setCopyingImage]=useState(false);
  const sharingRef=useRef(false);
  const [encounter,setEncounter]=useState(false);
  const [motionKey,setMotionKey]=useState(0);
@@ -62,7 +65,11 @@ export default function Home(){
  },[renderer,friend,background,motionKey]);
  useEffect(()=>{setEyeDraft(friend.eyes);setEyeError('');},[friend.eyes]);
  useEffect(()=>{
-  if(typeof navigator.share!=='function'||typeof navigator.canShare!=='function'){setImageShareAvailable(false);return;}
+  const copyingSupported=canCopyImage(navigator.clipboard,typeof ClipboardItem==='undefined'?undefined:ClipboardItem);
+  setImageCopyAvailable(copyingSupported);
+  const sharingSupported=typeof navigator.share==='function'&&typeof navigator.canShare==='function';
+  if(!sharingSupported)setImageShareAvailable(false);
+  if(!copyingSupported&&!sharingSupported)return;
   if(!renderer)return;
   let active=true;
   const timer=setTimeout(()=>{
@@ -70,7 +77,7 @@ export default function Home(){
     if(!active)return;
     const supported=canShareImage(navigator,file);
     setImageShareAvailable(supported);
-    setPreparedImage(supported?{key:imageKey,file,text:shareText}:null);
+    setPreparedImage({key:imageKey,file,text:shareText});
    }).catch(()=>{if(active){setImageShareAvailable(false);setPreparedImage(null);}});
   },120);
   return()=>{active=false;clearTimeout(timer);};
@@ -131,6 +138,16 @@ export default function Home(){
   }catch{setError('画像を共有できませんでした。「画像を保存」から保存して、Xで添付してね。');}
   finally{sharingRef.current=false;setSharing(false);}
  }
+ async function copyImage(){
+  if(sharingRef.current||!imageReady||!renderer||assetError)return;
+  sharingRef.current=true;setCopyingImage(true);setError('');setMessage('');
+  try{
+   const result=await copyPreparedImage(navigator.clipboard,typeof ClipboardItem==='undefined'?undefined:ClipboardItem,preparedImage,imageKey);
+   if(result==='copied')setMessage('画像を1枚コピーしました。「Xにポスト」を開いて、そのまま貼り付けてね。');
+   else if(result==='unsupported')setError('この環境では画像をコピーできません。「画像を保存」から保存して、Xで添付してね。');
+  }catch{setError('画像をコピーできませんでした。「画像を保存」から保存して、Xで添付してね。');}
+  finally{sharingRef.current=false;setCopyingImage(false);}
+ }
  async function copyCode(){
   try{await navigator.clipboard.writeText(currentCode);setMessage('この子のコードをコピーしました。');}
   catch{exportRef.current?.focus();exportRef.current?.select();setMessage('コードを選択しました。コピーして、メモに残してね。');}
@@ -160,10 +177,16 @@ export default function Home(){
     <p className="generation-hint">{allLocked?'全部固定中。どこかの固定をはずすと、またつくれるよ。':'気に入ったところを固定して、もうひとり。'}</p>
     </div>
     <div className="take-home">
-     {imageShareAvailable&&<Button className="wide-button image-share-button" variant="outline" onClick={shareImage} disabled={!imageReady||sharing||!renderer||!!assetError}><Share2/>{sharing?'共有画面を開いています…':!imageReady?'画像を準備しています…':'画像つきで共有'}</Button>}
+     {(imageShareAvailable||imageCopyAvailable)&&<DropdownMenu>
+      <DropdownMenuTrigger data-slot="button" render={<Button className="wide-button image-share-button" variant="outline"/>} disabled={!imageReady||sharing||copyingImage||!renderer||!!assetError}><Share2/>{copyingImage?'画像をコピーしています…':sharing?'共有画面を開いています…':!imageReady?'画像を準備しています…':'画像つきで共有'}<ChevronDown size={16}/></DropdownMenuTrigger>
+      <DropdownMenuContent className="image-share-menu" align="start" sideOffset={8}>
+       {imageCopyAvailable&&<DropdownMenuItem onClick={copyImage} disabled={!imageReady||sharing||copyingImage||!!assetError}><Copy/>画像をコピー</DropdownMenuItem>}
+       {imageShareAvailable&&<DropdownMenuItem onClick={shareImage} disabled={!imageReady||sharing||copyingImage||!!assetError}><Share2/>ほかのアプリに共有</DropdownMenuItem>}
+      </DropdownMenuContent>
+     </DropdownMenu>}
      <div className="save-row"><Button className="save-image" variant="outline" onClick={saveImage} disabled={!renderer||!!assetError||saving}><Download/>{saving?'書き出し中…':'画像を保存'}</Button><a className="share-link" href={`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer">Xにポスト<ArrowUpRight size={16}/></a></div>
      <div className="export-options"><label className="background-option"><Checkbox checked={transparent} onCheckedChange={setTransparent}/>背景を透明にする</label><span>PNG · 2048 × 2048</span></div>
-     <p className="small-note share-note">{imageShareAvailable?'共有先にXがあれば選んでね。見つからない場合は、画像を保存してXで添付できます。':'画像を保存して、Xの投稿画面で添付してね。対応している端末では「画像つきで共有」も使えます。'}</p>
+     <p className="small-note share-note">{imageCopyAvailable?'Xに貼り付けるときは「画像つきで共有」→「画像をコピー」を選んでね。投稿文は「Xにポスト」から入ります。':imageShareAvailable?'共有先にXがあれば選んでね。コピーして貼り付ける代わりに、画像を保存してXで添付できます。':'画像を保存して、Xの投稿画面で添付してね。対応している端末では「画像つきで共有」も使えます。'}</p>
     </div>
     <div className="feedback" aria-live="polite" aria-atomic="true">{message&&<p className="status-message">{message}</p>}{error&&<p className="error" role="alert">{error}</p>}</div>
    </section>

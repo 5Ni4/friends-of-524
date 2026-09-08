@@ -6,6 +6,22 @@ type ShareApi = {
   canShare?: (data: ShareData) => boolean;
   share?: (data: ShareData) => Promise<void>;
 };
+type ClipboardApi = { write?: (items: ClipboardItem[]) => Promise<void> };
+
+export function canCopyImage(clipboard: ClipboardApi | undefined, Item: typeof ClipboardItem | undefined) {
+  if (typeof clipboard?.write !== 'function' || typeof Item !== 'function') return false;
+  try { return typeof Item.supports !== 'function' || Item.supports('image/png'); } catch { return false; }
+}
+
+// One image representation in one clipboard item avoids the OS share sheet's Copy conversion.
+// Keep this call inside the user's click: do not render, fetch, or await before clipboard.write.
+export async function copyPreparedImage(clipboard: ClipboardApi | undefined, Item: typeof ClipboardItem | undefined, prepared: PreparedImage | null, currentKey: string) {
+  if (!prepared || prepared.key !== currentKey) return 'not-ready' as const;
+  if (!canCopyImage(clipboard, Item) || prepared.file.type !== 'image/png') return 'unsupported' as const;
+  const png = prepared.file.slice(0, prepared.file.size, 'image/png');
+  await clipboard!.write!([new Item!({ 'image/png': png })]);
+  return 'copied' as const;
+}
 
 export async function createFriendPng(
   renderer: FriendRenderer,
