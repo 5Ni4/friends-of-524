@@ -150,7 +150,7 @@ export default function Home(){
     <div className="portrait-card">
     <div className={`stage ${transparent?'checker':''}`} style={background?{background}:undefined}>
      <span className="stage-label">{original?'HELLO, 524!':'HELLO, FRIEND!'}</span>
-     <canvas key={motionKey} ref={canvasRef} width={1024} height={1024} className={`friend-canvas ${motionKey?'arriving':''}`} role="img" aria-label={`目が${friend.eyes}、${EAR_LABELS[friend.ear]}の耳、${MOUTH_LABELS[friend.mouth]}の口のお友達`}/>
+     <canvas key={motionKey} ref={canvasRef} width={1024} height={1024} className={`friend-canvas ${motionKey?'arriving':''}`} role="img" aria-label={`ひとみが${friend.eyes}、みみのかたちが${EAR_LABELS[friend.ear]}、くちのかたちが${MOUTH_LABELS[friend.mouth]}のお友達`}/>
      {!renderer&&!assetError&&<p className="asset-state">お友達をよんでいます…</p>}
      {assetError&&<p className="asset-state error" role="alert">{assetError}</p>}
      {encounter&&<div className="rare-notice" role="status"><Sparkles size={18}/>524があそびにきた！</div>}
@@ -168,23 +168,23 @@ export default function Home(){
     <div className="feedback" aria-live="polite" aria-atomic="true">{message&&<p className="status-message">{message}</p>}{error&&<p className="error" role="alert">{error}</p>}</div>
    </section>
    <aside className="control-panel" aria-label="お友達の設定">
-    <div className="panel-top"><h1>この子のかたち</h1><Button variant="ghost" className="unlock-all" onClick={()=>{setLocks({...EMPTY_LOCKS});setMessage('固定をすべて解除しました。');}} disabled={!LOCK_KEYS.some(k=>locks[k])}>固定をはずす</Button></div>
+    <div className="panel-top"><h1>かたち</h1><Button variant="ghost" className="unlock-all" onClick={()=>{setLocks({...EMPTY_LOCKS});setMessage('固定をすべて解除しました。');}} disabled={!LOCK_KEYS.some(k=>locks[k])}>固定をはずす</Button></div>
     <p className="panel-intro">気になるところだけ、選んでもOK。</p>
     <div className="control-section eye-section">
-     <div className="section-heading"><h2><span className="step-dot">01</span>目のなか</h2>{lockControl("eyes","目の文字")}</div>
-     <form className="eye-form" onSubmit={event=>{event.preventDefault();commitEyes();}}><Input className="eye-input" value={eyeDraft} maxLength={3} onChange={e=>{setEyeDraft(normalizeEyes(e.target.value));setEyeError('');}} disabled={locks.eyes} aria-label="目の3文字" aria-describedby="eye-help" aria-invalid={!!eyeError} autoComplete="off" spellCheck={false}/><Button type="submit" className="eye-apply" variant="outline" disabled={locks.eyes||eyeDraft===friend.eyes}>決定</Button></form>
+     <div className="section-heading"><h2><span className="step-dot">01</span>ひとみ</h2>{lockControl("eyes","ひとみ")}</div>
+     <form className="eye-form" onSubmit={event=>{event.preventDefault();commitEyes();}}><Input className="eye-input" value={eyeDraft} maxLength={3} onChange={e=>{setEyeDraft(normalizeEyes(e.target.value));setEyeError('');}} disabled={locks.eyes} aria-label="ひとみの3文字" aria-describedby="eye-help" aria-invalid={!!eyeError} autoComplete="off" spellCheck={false}/><Button type="submit" className="eye-apply" variant="outline" disabled={locks.eyes||eyeDraft===friend.eyes}>決定</Button></form>
      <p id="eye-help" className="small-note">3文字固定 · 0–9 / + − × ÷ ＊ ★ ? ! =</p>{eyeError&&<p className="error" role="alert">{eyeError}</p>}
     </div>
     <div className="control-section shape-section">
-     <div className="section-heading"><h2><span className="step-dot">02</span>耳・あたまのかたち</h2>{lockControl("ear","耳・あたまのかたち")}</div>
-     <RadioGroup value={friend.ear} onValueChange={value=>tryApply({...friend,ear:value as Friend['ear']})} disabled={locks.ear} className="shape-options ear-options" aria-label="耳・あたまのかたち">
+     <div className="section-heading"><h2><span className="step-dot">02</span>みみのかたち</h2>{lockControl("ear","みみのかたち")}</div>
+     <RadioGroup value={friend.ear} onValueChange={value=>tryApply({...friend,ear:value as Friend['ear']})} disabled={locks.ear} className="shape-options ear-options" aria-label="みみのかたち">
       {EARS.map(ear=><label key={ear} className="shape-choice" data-selected={friend.ear===ear}><RadioGroupItem className="choice-radio" value={ear}/><span>{EAR_LABELS[ear]}</span></label>)}
      </RadioGroup>
      {!isCurrentEar(friend.ear)&&<p className="small-note" style={{marginTop:9}}>復元した子の耳：{EAR_LABELS[friend.ear]}（以前のかたち）</p>}
     </div>
     <div className="control-section shape-section">
-     <div className="section-heading"><h2><span className="step-dot">03</span>口のかたち</h2>{lockControl("mouth","口のかたち")}</div>
-     <RadioGroup value={friend.mouth} onValueChange={value=>tryApply({...friend,mouth:value as Friend['mouth']})} disabled={locks.mouth} className="shape-options mouth-options" aria-label="口のかたち">
+     <div className="section-heading"><h2><span className="step-dot">03</span>くちのかたち</h2>{lockControl("mouth","くちのかたち")}</div>
+     <RadioGroup value={friend.mouth} onValueChange={value=>tryApply({...friend,mouth:value as Friend['mouth']})} disabled={locks.mouth} className="shape-options mouth-options" aria-label="くちのかたち">
       {MOUTHS.map(mouth=><label key={mouth} className="shape-choice mouth-choice" data-selected={friend.mouth===mouth}><RadioGroupItem className="choice-radio" value={mouth}/><span>{MOUTH_LABELS[mouth]}</span></label>)}
      </RadioGroup>
      {!isCurrentMouth(friend.mouth)&&<p className="small-note" style={{marginTop:9}}>復元した子の口：{MOUTH_LABELS[friend.mouth]}（以前のかたち）</p>}
@@ -195,14 +195,14 @@ export default function Home(){
       {PALETTES.map(p=><label className="palette-choice" key={p.id} data-selected={friend.palette===p.id} title={p.name}><RadioGroupItem value={p.id} className="choice-radio" aria-label={p.name}/><span className="palette-disc" style={{background:p.background}}><span style={{background:p.body[0]}}/><i style={{background:p.mouth[0]}}/></span></label>)}
      </RadioGroup>
      <p className="palette-name">{palette.name}</p>
-     {colorRow("bodyColor","体の色",palette.body)}{colorRow("eyeColor","目の色",palette.eye)}{colorRow("mouthColor","口の色",palette.mouth)}
+     {colorRow("bodyColor","からだのいろ",palette.body)}{colorRow("eyeColor","めのいろ",palette.eye)}{colorRow("mouthColor","くちのいろ",palette.mouth)}
      {colorLocked&&<p className="small-note color-lock-hint">色を固定している間は、このパレットで遊べます。</p>}
     </div>
     <details className="code-box">
-     <summary><Code2 size={18}/><span>この子のコードを残す・読み込む</span><ChevronDown className="details-chevron" size={16}/></summary>
+     <summary><Code2 size={18}/><span>遺伝じょうほうをきろくする・ふくげんする</span><ChevronDown className="details-chevron" size={16}/></summary>
      <div className="code-content"><p className="small-note">メモに残すと、あとで同じ子に会えるよ。</p><label className="field-label" htmlFor="current-code">この子のコード</label><Textarea ref={exportRef} id="current-code" className="code-text" readOnly value={currentCode} rows={4}/><div className="code-actions"><Button variant="outline" onClick={copyCode}><Copy/>コピー</Button><Button variant="outline" onClick={saveCode}><Download/>テキスト保存</Button></div><label className="field-label" htmlFor="restore-code">保存したコードから呼び出す</label><Textarea id="restore-code" className="code-text" value={restoreDraft} onChange={e=>{setRestoreDraft(e.target.value);setRestoreError('');}} maxLength={4096} placeholder="524F1: から始まるコードを貼り付け" rows={3} aria-invalid={!!restoreError}/><Button className="restore-button" disabled={!restoreDraft.trim()} onClick={()=>{try{restore(restoreDraft);}catch(e){setRestoreError(e instanceof Error?e.message:'コードを読み込めませんでした。');}}}>この子を呼び出す</Button><p className="small-note">呼び出すと、いまの固定は解除されます。</p>{restoreError&&<p role="alert" className="error">{restoreError}</p>}</div>
     </details>
-    <p className="rare-hint"><Sparkles size={15}/><span>固定なしでつくると、ごくまれに524本人が。<br/><span>毎回 1 / 4096 の確率で、あそびにきます。</span></span></p>
+    <p className="rare-hint"><Sparkles size={15}/><span>ランダムでホンモノの524が登場します（ 1 / 4096 の確率 ）</span></p>
    </aside>
   </div>
   <footer className="page-footer"><span>524と、まだ見ぬお友達。</span><span className="footer-version">ver{appVersion.replace(/\.0$/, '')}</span></footer>
