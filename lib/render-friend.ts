@@ -78,13 +78,13 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
  }
  if(earAtlas){
   const atlasCanvas=makeCanvas(1024,1024),atlasContext=context(atlasCanvas);atlasContext.drawImage(earAtlas,0,0,1024,1024);
-  const bare=makeCanvas(SIZE,SIZE),bareContext=context(bare),barePixels=bareContext.createImageData(SIZE,SIZE);barePixels.data.set(bodyPixels);
-  // Trim the old upper projections, preserving the original face and lower body.
-  for(let y=0;y<360;y++)for(let x=0;x<SIZE;x++){
-   const forehead=280+.0012*(x-510)**2;
-   barePixels.data[(y*SIZE+x)*4+3]*=Math.max(0,Math.min(1,y+.5-forehead));
-  }
-  bareContext.putImageData(barePixels,0,0);
+  const bare=makeCanvas(SIZE,SIZE),bareContext=context(bare),headClip=makeCanvas(SIZE,SIZE),headContext=context(headClip);
+  // Match the source's side tangents so removing its ears leaves no forehead corners.
+  headContext.beginPath();headContext.moveTo(0,362);headContext.lineTo(305,362);
+  headContext.bezierCurveTo(355,302,460,280,510,280);
+  headContext.bezierCurveTo(620,280,721,323,755,373);
+  headContext.lineTo(SIZE,373);headContext.lineTo(SIZE,SIZE);headContext.lineTo(0,SIZE);headContext.closePath();headContext.fill();
+  bareContext.drawImage(body,0,0);bareContext.globalCompositeOperation='destination-in';bareContext.drawImage(headClip,0,0);bareContext.globalCompositeOperation='source-over';
   const variants=['bear','rabbit','antenna','monkey'] as const;
   const placements:Record<typeof variants[number],Array<{cx:number;bottom:number;w:number;h:number}>>={
    bear:[{cx:386,bottom:342,w:112,h:112},{cx:567,bottom:333,w:117,h:117}],
