@@ -1,6 +1,6 @@
 export const GLYPHS = '0123456789+-★?!=';
-export const EARS = ['bear', 'rabbit', 'antenna', 'monkey'] as const;
-export const LEGACY_EARS = ['classic', 'long', 'round', 'tilt'] as const;
+export const EARS = ['classic', 'bear', 'rabbit', 'antenna', 'monkey'] as const;
+export const LEGACY_EARS = ['long', 'round', 'tilt'] as const;
 export const MOUTHS = ['flat', 'smile', 'oval', 'wave', 'beak'] as const;
 export type Ear = typeof EARS[number] | typeof LEGACY_EARS[number];
 export type Mouth = typeof MOUTHS[number];
@@ -21,7 +21,7 @@ export type LockKey = typeof LOCK_KEYS[number];
 export type Locks = Record<LockKey,boolean>;
 export const EMPTY_LOCKS:Locks = {eyes:false,ear:false,mouth:false,palette:false,bodyColor:false,eyeColor:false,mouthColor:false};
 export const ORIGINAL:Friend = {v:1,eyes:'524',ear:'classic',mouth:'flat',palette:'lemon',bodyColor:'#fedf25',eyeColor:'#f7f7f7',mouthColor:'#1e6b7d',inkColor:'#ff7b33'};
-export const INITIAL:Friend = {v:1,eyes:'3?8',ear:'bear',mouth:'smile',palette:'melon',bodyColor:'#a8c886',eyeColor:'#fff9e8',mouthColor:'#335e5a',inkColor:'#b96b39'};
+export const INITIAL:Friend = {v:1,eyes:'3?8',ear:'classic',mouth:'smile',palette:'melon',bodyColor:'#a8c886',eyeColor:'#fff9e8',mouthColor:'#335e5a',inkColor:'#b96b39'};
 export function paletteFor(id:string){return PALETTES.find(p=>p.id===id) ?? PALETTES[0];}
 export function isOriginal(f:Friend){return Object.keys(ORIGINAL).every(key=>f[key as keyof Friend]===ORIGINAL[key as keyof Friend]);}
 export function sameFriend(a:Friend,b:Friend){return Object.keys(ORIGINAL).every(key=>a[key as keyof Friend]===b[key as keyof Friend]);}
