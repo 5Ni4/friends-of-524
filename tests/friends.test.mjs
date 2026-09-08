@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {INITIAL,ORIGINAL,EMPTY_LOCKS,LOCK_KEYS,PALETTES,EARS,LEGACY_EARS,generateFriend,isOriginal,exportCode,importCode,makerReducer,normalizeEyes,validEyes,validateFriend} from '../lib/friends.ts';
+import {INITIAL,ORIGINAL,EMPTY_LOCKS,LOCK_KEYS,PALETTES,EARS,LEGACY_EARS,MOUTHS,LEGACY_MOUTHS,generateFriend,isOriginal,exportCode,importCode,makerReducer,normalizeEyes,validEyes,validateFriend} from '../lib/friends.ts';
 test('eligible generation has exactly one 1/4096 original draw',()=>{
  let encounters=0;
  for(let roll=0;roll<4096;roll++){
@@ -70,4 +70,19 @@ test('new ear codes and old saved ear codes retain distinct identities',()=>{
   const locked=generateFriend(f,{...EMPTY_LOCKS,ear:true},()=>0);assert.equal(locked.friend.ear,ear);
  }
  assert.equal(ORIGINAL.ear,'classic');
+});
+test('usual mouth and hand-painted variants generate while preserving locked values',()=>{
+ const locks={...EMPTY_LOCKS,eyes:true,ear:true,palette:true,bodyColor:true,eyeColor:true,mouthColor:true};
+ for(let i=0;i<MOUTHS.length;i++)assert.equal(generateFriend(INITIAL,locks,()=>i).friend.mouth,MOUTHS[i]);
+ const collision=generateFriend({...ORIGINAL,mouth:'oval-soft'},locks,()=>0);
+ assert.equal(collision.friend.mouth,'smile-soft');assert.equal(collision.encounter,false);
+ for(const key of LOCK_KEYS)if(locks[key])assert.equal(collision.friend[key],ORIGINAL[key]);
+});
+test('old and new mouth codes preserve their shapes and mouth locks',()=>{
+ for(const mouth of [...MOUTHS,...LEGACY_MOUTHS]){
+  const f={...INITIAL,mouth};assert.deepEqual(importCode(exportCode(f)),f);
+  assert.equal(generateFriend(f,{...EMPTY_LOCKS,mouth:true},()=>0).friend.mouth,mouth);
+ }
+ assert.equal(ORIGINAL.mouth,'flat');
+ assert.throws(()=>validateFriend({...INITIAL,mouth:'unknown'}));
 });

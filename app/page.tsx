@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { INITIAL, EMPTY_LOCKS, LOCK_KEYS, PALETTES, EARS, MOUTHS, EAR_LABELS, MOUTH_LABELS, paletteFor, generateFriend, exportCode, importCode, isOriginal, isCurrentEar, sameFriend, changePalette, normalizeEyes, validEyes, makerReducer } from '@/lib/friends';
+import { INITIAL, EMPTY_LOCKS, LOCK_KEYS, PALETTES, EARS, MOUTHS, EAR_LABELS, MOUTH_LABELS, paletteFor, generateFriend, exportCode, importCode, isOriginal, isCurrentEar, isCurrentMouth, sameFriend, changePalette, normalizeEyes, validEyes, makerReducer } from '@/lib/friends';
 import type { Friend, LockKey, Locks } from '@/lib/friends';
 import { loadFriendRenderer } from '@/lib/render-friend';
 import type { FriendRenderer } from '@/lib/render-friend';
@@ -151,6 +151,7 @@ export default function Home(){
      <RadioGroup value={friend.mouth} onValueChange={value=>tryApply({...friend,mouth:value as Friend['mouth']})} disabled={locks.mouth} className="shape-options mouth-options" aria-label="口のかたち">
       {MOUTHS.map(mouth=><label key={mouth} className="shape-choice mouth-choice" data-selected={friend.mouth===mouth}><RadioGroupItem className="choice-radio" value={mouth}/><span>{MOUTH_LABELS[mouth]}</span></label>)}
      </RadioGroup>
+     {!isCurrentMouth(friend.mouth)&&<p className="small-note" style={{marginTop:9}}>復元した子の口：{MOUTH_LABELS[friend.mouth]}（以前のかたち）</p>}
     </div>
     <div className="control-section palette-section">
      <div className="section-heading"><h2><span className="step-dot">04</span>カラーパレット</h2>{lockControl("palette","パレット")}</div>

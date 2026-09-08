@@ -21,7 +21,7 @@ function fillInterior(data:ImageData){
  while(head<tail){const i=queue[head++],x=i%w;if(x>0)visit(i-1);if(x<w-1)visit(i+1);if(i>=w)visit(i-w);if(i<n-w)visit(i+w);}
  for(let i=0;i<n;i++)if(!seen[i])data.data[i*4+3]=255;
 }
-export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageSource,makeCanvas:MakeCanvas=browserCanvas,earAtlas?:CanvasImageSource){
+export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageSource,makeCanvas:MakeCanvas=browserCanvas,earAtlas?:CanvasImageSource,mouthAtlas?:CanvasImageSource){
  const base=makeCanvas(SIZE,SIZE),baseCtx=context(base);baseCtx.drawImage(source,0,0,SIZE,SIZE);
  const pixels=baseCtx.getImageData(0,0,SIZE,SIZE).data;
  const body=makeCanvas(SIZE,SIZE),eyes=makeCanvas(SIZE,SIZE),digits=makeCanvas(SIZE,SIZE),mouth=makeCanvas(SIZE,SIZE),shadow=makeCanvas(SIZE,SIZE);
@@ -116,6 +116,16 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
   ctx.putImageData(data,0,0);const box=bounds(c),trim=makeCanvas(box.w,box.h);context(trim).drawImage(c,box.x,box.y,box.w,box.h,0,0,box.w,box.h);
   if(cell<16)glyphs[GLYPH_ORDER[cell]]=trim;else mouthParts[['smile','oval','wave','beak'][cell-16]]=trim;
  }
+ if(mouthAtlas){
+  const sheet=makeCanvas(1024,1024);context(sheet).drawImage(mouthAtlas,0,0,1024,1024);
+  // Keep the new painted edges and alpha; old codes still use the original atlas.
+  ['smile-soft','oval-soft','wave-soft','beak-soft'].forEach((kind,index)=>{
+   const cell=makeCanvas(512,512),ctx=context(cell);ctx.drawImage(sheet,(index%2)*512,Math.floor(index/2)*512,512,512,0,0,512,512);
+   const data=ctx.getImageData(0,0,512,512);
+   for(let i=0;i<data.data.length;i+=4){const light=(data.data[i]+data.data[i+1]+data.data[i+2])/3,alpha=data.data[i+3];data.data[i]=255;data.data[i+1]=255;data.data[i+2]=255;data.data[i+3]=Math.round(Math.max(0,Math.min(1,(150-light)/120))*alpha);}
+   ctx.putImageData(data,0,0);const box=bounds(cell),trim=makeCanvas(box.w,box.h);context(trim).drawImage(cell,box.x,box.y,box.w,box.h,0,0,box.w,box.h);mouthParts[kind]=trim;
+  });
+ }
  const digitCenters:Array<{x:number;y:number}>=[];
  for(const [i,box] of [[0,{x:300,y:340,w:145,h:190}],[1,{x:445,y:340,w:130,h:190}],[2,{x:575,y:340,w:160,h:190}]] as const){
   const c=makeCanvas(box.w,box.h);context(c).drawImage(digits,box.x,box.y,box.w,box.h,0,0,box.w,box.h);
@@ -141,13 +151,17 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
    paint(ctx,glyph,friend.inkColor,digitCenters[i].x-w/2,digitCenters[i].y-h/2,w,h);
   });
   if(friend.mouth==='flat')paint(ctx,mouth,friend.mouthColor);
-  else {const part=mouthParts[friend.mouth],targetWidth={smile:156,oval:92,wave:205,beak:80}[friend.mouth],scale=Math.min(targetWidth/part.width,76/part.height),w=part.width*scale,h=part.height*scale;paint(ctx,part,friend.mouthColor,mouthBox.x+mouthBox.w/2-w/2,mouthBox.y+mouthBox.h/2-h/2,w,h);}
+  else {
+   const part=mouthParts[friend.mouth];if(!part){ctx.restore();throw new Error('口の絵を読み込めませんでした。ページをもう一度開いてね。');}
+   const targetWidth={smile:156,oval:92,wave:205,beak:80,'smile-soft':178,'oval-soft':105,'wave-soft':210,'beak-soft':88}[friend.mouth],scale=Math.min(targetWidth/part.width,76/part.height),w=part.width*scale,h=part.height*scale;
+   paint(ctx,part,friend.mouthColor,mouthBox.x+mouthBox.w/2-w/2,mouthBox.y+mouthBox.h/2-h/2,w,h);
+  }
   ctx.restore();
  }};
 }
 export async function loadFriendRenderer(){
  const load=(path:string)=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('お友達の絵を読み込めませんでした。もう一度ページを開いてね。'));image.src=path;});
- const [source,atlas,ears]=await Promise.all([load('/assets/524-reference.png'),load('/assets/glyph-mouth-atlas.png'),load('/assets/ear-atlas-v2.png')]);
- return createFriendRenderer(source,atlas,browserCanvas,ears);
+ const [source,atlas,ears,mouths]=await Promise.all([load('/assets/524-reference.png'),load('/assets/glyph-mouth-atlas.png'),load('/assets/ear-atlas-v2.png'),load('/assets/mouth-atlas-v2.png')]);
+ return createFriendRenderer(source,atlas,browserCanvas,ears,mouths);
 }
 export type FriendRenderer=ReturnType<typeof createFriendRenderer>;
