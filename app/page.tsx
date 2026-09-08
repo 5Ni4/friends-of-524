@@ -140,11 +140,11 @@ export default function Home(){
      <p id="eye-help" className="small-note">3文字固定 · 0–9 / + − ★ ? ! =</p>{eyeError&&<p className="error" role="alert">{eyeError}</p>}
     </div>
     <div className="control-section shape-section">
-     <div className="section-heading"><h2><span className="step-dot">02</span>耳のかたち</h2>{lockControl("ear","耳のかたち")}</div>
-     <RadioGroup value={friend.ear} onValueChange={value=>tryApply({...friend,ear:value as Friend['ear']})} disabled={locks.ear} className="shape-options ear-options" aria-label="耳のかたち">
+     <div className="section-heading"><h2><span className="step-dot">02</span>耳・あたまのかたち</h2>{lockControl("ear","耳・あたまのかたち")}</div>
+     <RadioGroup value={friend.ear} onValueChange={value=>tryApply({...friend,ear:value as Friend['ear']})} disabled={locks.ear} className="shape-options ear-options" aria-label="耳・あたまのかたち">
       {EARS.map(ear=><label key={ear} className="shape-choice" data-selected={friend.ear===ear}><RadioGroupItem className="choice-radio" value={ear}/><span>{EAR_LABELS[ear]}</span></label>)}
      </RadioGroup>
-     {!isCurrentEar(friend.ear)&&<p className="small-note" style={{marginTop:9}}>{original?'524本人の耳です。':`復元した子の耳：${EAR_LABELS[friend.ear]}`}</p>}
+     {!isCurrentEar(friend.ear)&&<p className="small-note" style={{marginTop:9}}>復元した子の耳：{EAR_LABELS[friend.ear]}（以前のかたち）</p>}
     </div>
     <div className="control-section shape-section">
      <div className="section-heading"><h2><span className="step-dot">03</span>口のかたち</h2>{lockControl("mouth","口のかたち")}</div>

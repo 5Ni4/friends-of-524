@@ -59,8 +59,8 @@ test('undo restores the whole prior character once',()=>{
  assert.equal(makerReducer(undone,{type:'undo'}),undone);
  assert.equal(makerReducer(initial,{type:'apply',friend:{...INITIAL}}),initial);
 });
-test('usual ear and four added ears appear in normal generation',()=>{
- assert.deepEqual(EARS,['classic','bear','rabbit','antenna','monkey']);
+test('six current head shapes generate including uniform rabbit ears, single antenna and sprout',()=>{
+ assert.deepEqual(EARS,['classic','bear','rabbit-straight','antenna-single','monkey','sprout']);
  const locks={...EMPTY_LOCKS,eyes:true,mouth:true,palette:true,bodyColor:true,eyeColor:true,mouthColor:true};
  for(let i=0;i<EARS.length;i++)assert.equal(generateFriend(INITIAL,locks,()=>i).friend.ear,EARS[i]);
 });

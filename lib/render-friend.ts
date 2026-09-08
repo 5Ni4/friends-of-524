@@ -21,7 +21,7 @@ function fillInterior(data:ImageData){
  while(head<tail){const i=queue[head++],x=i%w;if(x>0)visit(i-1);if(x<w-1)visit(i+1);if(i>=w)visit(i-w);if(i<n-w)visit(i+w);}
  for(let i=0;i<n;i++)if(!seen[i])data.data[i*4+3]=255;
 }
-export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageSource,makeCanvas:MakeCanvas=browserCanvas,earAtlas?:CanvasImageSource,mouthAtlas?:CanvasImageSource){
+export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageSource,makeCanvas:MakeCanvas=browserCanvas,earAtlas?:CanvasImageSource,mouthAtlas?:CanvasImageSource,newEarAtlas?:CanvasImageSource){
  const base=makeCanvas(SIZE,SIZE),baseCtx=context(base);baseCtx.drawImage(source,0,0,SIZE,SIZE);
  const pixels=baseCtx.getImageData(0,0,SIZE,SIZE).data;
  const body=makeCanvas(SIZE,SIZE),eyes=makeCanvas(SIZE,SIZE),digits=makeCanvas(SIZE,SIZE),mouth=makeCanvas(SIZE,SIZE),shadow=makeCanvas(SIZE,SIZE);
@@ -104,6 +104,25 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
    }
    ctx.drawImage(bare,0,0);bodyVariants[kind]=silhouette;
   });
+  if(newEarAtlas){
+   const sheet=makeCanvas(1024,1024);context(sheet).drawImage(newEarAtlas,0,0,1024,1024);
+   const variants=[
+    {kind:'rabbit-straight',parts:[{sx:0,sy:0,sw:256,sh:512,cx:395,bottom:330,w:82,h:230},{sx:256,sy:0,sw:256,sh:512,cx:564,bottom:327,w:82,h:230}]},
+    {kind:'antenna-single',parts:[{sx:512,sy:0,sw:512,sh:512,cx:505,bottom:300,w:78,h:205}]},
+    {kind:'sprout',parts:[{sx:0,sy:512,sw:512,sh:512,cx:508,bottom:300,w:210,h:145}]},
+   ] as const;
+   for(const {kind,parts} of variants){
+    const silhouette=makeCanvas(SIZE,SIZE),ctx=context(silhouette);
+    for(const p of parts){
+     const cell=makeCanvas(p.sw,p.sh),cellCtx=context(cell);cellCtx.drawImage(sheet,p.sx,p.sy,p.sw,p.sh,0,0,p.sw,p.sh);
+     const data=cellCtx.getImageData(0,0,p.sw,p.sh);
+     for(let i=0;i<data.data.length;i+=4){const light=(data.data[i]+data.data[i+1]+data.data[i+2])/3,alpha=data.data[i+3];data.data[i]=255;data.data[i+1]=255;data.data[i+2]=255;data.data[i+3]=Math.round(Math.max(0,Math.min(1,(150-light)/120))*alpha);}
+     cellCtx.putImageData(data,0,0);const box=bounds(cell),scale=Math.min(p.w/box.w,p.h/box.h),w=box.w*scale,h=box.h*scale;
+     ctx.drawImage(cell,box.x,box.y,box.w,box.h,p.cx-w/2,p.bottom-h,w,h);
+    }
+    ctx.drawImage(bare,0,0);bodyVariants[kind]=silhouette;
+   }
+  }
  }
  const atlasCanvas=makeCanvas(1120,1400),atlasCtx=context(atlasCanvas);atlasCtx.drawImage(atlas,0,0,1120,1400);
  const glyphs:Record<string,HTMLCanvasElement>={};
@@ -161,7 +180,7 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
 }
 export async function loadFriendRenderer(){
  const load=(path:string)=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('お友達の絵を読み込めませんでした。もう一度ページを開いてね。'));image.src=path;});
- const [source,atlas,ears,mouths]=await Promise.all([load('/assets/524-reference.png'),load('/assets/glyph-mouth-atlas.png'),load('/assets/ear-atlas-v2.png'),load('/assets/mouth-atlas-v2.png')]);
- return createFriendRenderer(source,atlas,browserCanvas,ears,mouths);
+ const [source,atlas,ears,mouths,newEars]=await Promise.all([load('/assets/524-reference.png'),load('/assets/glyph-mouth-atlas.png'),load('/assets/ear-atlas-v2.png'),load('/assets/mouth-atlas-v2.png'),load('/assets/ear-atlas-v3.png')]);
+ return createFriendRenderer(source,atlas,browserCanvas,ears,mouths,newEars);
 }
 export type FriendRenderer=ReturnType<typeof createFriendRenderer>;
