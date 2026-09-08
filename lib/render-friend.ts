@@ -21,7 +21,7 @@ function fillInterior(data:ImageData){
  while(head<tail){const i=queue[head++],x=i%w;if(x>0)visit(i-1);if(x<w-1)visit(i+1);if(i>=w)visit(i-w);if(i<n-w)visit(i+w);}
  for(let i=0;i<n;i++)if(!seen[i])data.data[i*4+3]=255;
 }
-export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageSource,makeCanvas:MakeCanvas=browserCanvas){
+export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageSource,makeCanvas:MakeCanvas=browserCanvas,earAtlas?:CanvasImageSource){
  const base=makeCanvas(SIZE,SIZE),baseCtx=context(base);baseCtx.drawImage(source,0,0,SIZE,SIZE);
  const pixels=baseCtx.getImageData(0,0,SIZE,SIZE).data;
  const body=makeCanvas(SIZE,SIZE),eyes=makeCanvas(SIZE,SIZE),digits=makeCanvas(SIZE,SIZE),mouth=makeCanvas(SIZE,SIZE),shadow=makeCanvas(SIZE,SIZE);
@@ -53,7 +53,7 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
  // Old facial paint is an opaque part of the body/eye substrate, not a hole.
  fillInterior(buffers[0]);fillInterior(buffers[1]);
  layers.forEach((c,i)=>context(c).putImageData(buffers[i],0,0));
- const bodyVariants:Record<Ear,HTMLCanvasElement>={classic:body,long:body,round:body,tilt:body};
+ const bodyVariants:Partial<Record<Ear,HTMLCanvasElement>>={classic:body,long:body,round:body,tilt:body};
  const bodyPixels=buffers[0].data;
  for(const kind of ['long','round','tilt'] as const){
   const c=makeCanvas(SIZE,SIZE),ctx=context(c),out=ctx.createImageData(SIZE,SIZE);
@@ -75,6 +75,35 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
    out.data[o+3]=Math.round(at(ix,iy)*(1-fx)*(1-fy)+at(ix+1,iy)*fx*(1-fy)+at(ix,iy+1)*(1-fx)*fy+at(ix+1,iy+1)*fx*fy);
   }
   ctx.putImageData(out,0,0);bodyVariants[kind]=c;
+ }
+ if(earAtlas){
+  const atlasCanvas=makeCanvas(1024,1024),atlasContext=context(atlasCanvas);atlasContext.drawImage(earAtlas,0,0,1024,1024);
+  const bare=makeCanvas(SIZE,SIZE),bareContext=context(bare),barePixels=bareContext.createImageData(SIZE,SIZE);barePixels.data.set(bodyPixels);
+  // Trim the old upper projections, preserving the original face and lower body.
+  for(let y=0;y<360;y++)for(let x=0;x<SIZE;x++){
+   const forehead=280+.0012*(x-510)**2;
+   barePixels.data[(y*SIZE+x)*4+3]*=Math.max(0,Math.min(1,y+.5-forehead));
+  }
+  bareContext.putImageData(barePixels,0,0);
+  const variants=['bear','rabbit','antenna','monkey'] as const;
+  const placements:Record<typeof variants[number],Array<{cx:number;bottom:number;w:number;h:number}>>={
+   bear:[{cx:386,bottom:342,w:112,h:112},{cx:567,bottom:333,w:117,h:117}],
+   rabbit:[{cx:399,bottom:334,w:91,h:228},{cx:563,bottom:329,w:84,h:232}],
+   antenna:[{cx:398,bottom:332,w:90,h:210},{cx:563,bottom:328,w:90,h:210}],
+   monkey:[{cx:272,bottom:480,w:134,h:146},{cx:775,bottom:475,w:134,h:146}],
+  };
+  variants.forEach((kind,index)=>{
+   const silhouette=makeCanvas(SIZE,SIZE),ctx=context(silhouette);
+   for(let side=0;side<2;side++){
+    const cell=makeCanvas(256,512),cellCtx=context(cell);
+    cellCtx.drawImage(atlasCanvas,(index%2)*512+side*256,Math.floor(index/2)*512,256,512,0,0,256,512);
+    const data=cellCtx.getImageData(0,0,256,512);
+    for(let i=0;i<data.data.length;i+=4){const light=(data.data[i]+data.data[i+1]+data.data[i+2])/3,alpha=data.data[i+3];data.data[i]=255;data.data[i+1]=255;data.data[i+2]=255;data.data[i+3]=Math.round(Math.max(0,Math.min(1,(150-light)/120))*alpha);}
+    cellCtx.putImageData(data,0,0);const box=bounds(cell),p=placements[kind][side],scale=Math.min(p.w/box.w,p.h/box.h),w=box.w*scale,h=box.h*scale;
+    ctx.drawImage(cell,box.x,box.y,box.w,box.h,p.cx-w/2,p.bottom-h,w,h);
+   }
+   ctx.drawImage(bare,0,0);bodyVariants[kind]=silhouette;
+  });
  }
  const atlasCanvas=makeCanvas(1120,1400),atlasCtx=context(atlasCanvas);atlasCtx.drawImage(atlas,0,0,1120,1400);
  const glyphs:Record<string,HTMLCanvasElement>={};
@@ -102,7 +131,8 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
   if(background){ctx.fillStyle=background;ctx.fillRect(0,0,SIZE,SIZE);}
   ctx.translate(-128,-90);ctx.scale(1.25,1.25);
   if(background){ctx.save();ctx.globalAlpha=.1;paint(ctx,shadow,'#243449',0,-70);ctx.restore();}
-  paint(ctx,bodyVariants[friend.ear],friend.bodyColor);
+  const bodyMask=bodyVariants[friend.ear];if(!bodyMask){ctx.restore();throw new Error('耳の絵を読み込めませんでした。ページをもう一度開いてね。');}
+  paint(ctx,bodyMask,friend.bodyColor);
   paint(ctx,eyes,friend.eyeColor);
   if(friend.eyes==='524')paint(ctx,digits,friend.inkColor);
   else Array.from(friend.eyes).forEach((char,i)=>{
@@ -117,7 +147,7 @@ export function createFriendRenderer(source:CanvasImageSource,atlas:CanvasImageS
 }
 export async function loadFriendRenderer(){
  const load=(path:string)=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('お友達の絵を読み込めませんでした。もう一度ページを開いてね。'));image.src=path;});
- const [source,atlas]=await Promise.all([load('/assets/524-reference.png'),load('/assets/glyph-mouth-atlas.png')]);
- return createFriendRenderer(source,atlas);
+ const [source,atlas,ears]=await Promise.all([load('/assets/524-reference.png'),load('/assets/glyph-mouth-atlas.png'),load('/assets/ear-atlas-v2.png')]);
+ return createFriendRenderer(source,atlas,browserCanvas,ears);
 }
 export type FriendRenderer=ReturnType<typeof createFriendRenderer>;

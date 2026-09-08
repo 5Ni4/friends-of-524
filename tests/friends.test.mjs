@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {INITIAL,ORIGINAL,EMPTY_LOCKS,LOCK_KEYS,PALETTES,generateFriend,isOriginal,exportCode,importCode,makerReducer,normalizeEyes,validEyes,validateFriend} from '../lib/friends.ts';
+import {INITIAL,ORIGINAL,EMPTY_LOCKS,LOCK_KEYS,PALETTES,EARS,LEGACY_EARS,generateFriend,isOriginal,exportCode,importCode,makerReducer,normalizeEyes,validEyes,validateFriend} from '../lib/friends.ts';
 test('eligible generation has exactly one 1/4096 original draw',()=>{
  let encounters=0;
  for(let roll=0;roll<4096;roll++){
@@ -21,7 +21,7 @@ test('127 nonempty lock combinations preserve values and skip rare draw',()=>{
 test('normal draw cannot accidentally reconstruct the original',()=>{
  const values=[1,0,5,2,4,0,0,0,0,0];let at=0;
  const result=generateFriend(INITIAL,EMPTY_LOCKS,n=>{const v=values[at++];assert.ok(v<n);return v;});
- assert.equal(result.encounter,false);assert.equal(isOriginal(result.friend),false);assert.equal(result.friend.eyes,'525');
+ assert.equal(result.encounter,false);assert.equal(isOriginal(result.friend),false);assert.equal(result.friend.eyes,'524');assert.equal(result.friend.ear,'bear');
 });
 test('normal generation cannot finish original while other parts are locked',()=>{
  const locks={...EMPTY_LOCKS,eyes:true,ear:true,mouth:true,palette:true,bodyColor:true,eyeColor:true};
@@ -52,4 +52,16 @@ test('undo restores the whole prior character once',()=>{
  const undone=makerReducer(changed,{type:'undo'});assert.deepEqual(undone,{friend:INITIAL,previous:null});
  assert.equal(makerReducer(undone,{type:'undo'}),undone);
  assert.equal(makerReducer(initial,{type:'apply',friend:{...INITIAL}}),initial);
+});
+test('only requested new ears appear in normal generation',()=>{
+ assert.deepEqual(EARS,['bear','rabbit','antenna','monkey']);
+ const locks={...EMPTY_LOCKS,eyes:true,mouth:true,palette:true,bodyColor:true,eyeColor:true,mouthColor:true};
+ for(let i=0;i<EARS.length;i++)assert.equal(generateFriend(INITIAL,locks,n=>n===4?i:0).friend.ear,EARS[i]);
+});
+test('new ear codes and old saved ear codes retain distinct identities',()=>{
+ for(const ear of [...EARS,...LEGACY_EARS]){
+  const f={...INITIAL,ear};assert.deepEqual(importCode(exportCode(f)),f);
+  const locked=generateFriend(f,{...EMPTY_LOCKS,ear:true},()=>0);assert.equal(locked.friend.ear,ear);
+ }
+ assert.equal(ORIGINAL.ear,'classic');
 });

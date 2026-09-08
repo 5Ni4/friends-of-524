@@ -1,9 +1,11 @@
 export const GLYPHS = '0123456789+-★?!=';
-export const EARS = ['classic', 'long', 'round', 'tilt'] as const;
+export const EARS = ['bear', 'rabbit', 'antenna', 'monkey'] as const;
+export const LEGACY_EARS = ['classic', 'long', 'round', 'tilt'] as const;
 export const MOUTHS = ['flat', 'smile', 'oval', 'wave', 'beak'] as const;
-export type Ear = typeof EARS[number];
+export type Ear = typeof EARS[number] | typeof LEGACY_EARS[number];
 export type Mouth = typeof MOUTHS[number];
-export const EAR_LABELS: Record<Ear,string> = {classic:'いつもの',long:'ながめ',round:'まるめ',tilt:'かたっぽ'};
+export const EAR_LABELS: Record<Ear,string> = {bear:'くま耳',rabbit:'うさ耳',antenna:'アンテナ',monkey:'サル耳',classic:'いつもの',long:'ながめ',round:'まるめ',tilt:'かたっぽ'};
+export function isCurrentEar(ear:Ear):ear is typeof EARS[number]{return (EARS as readonly string[]).includes(ear);}
 export const MOUTH_LABELS: Record<Mouth,string> = {flat:'すん',smile:'にこ',oval:'ぽかん',wave:'むにゃ',beak:'ちょん'};
 export const PALETTES = [
  {id:'lemon',name:'レモンソーダ',body:['#fedf25','#f8bd35','#e9ed79'],eye:['#f7f7f7','#fff5d6','#e0f2ed'],mouth:['#1e6b7d','#365e59','#cc5940'],ink:'#ff7b33',background:'#b5e5ed'},
@@ -19,7 +21,7 @@ export type LockKey = typeof LOCK_KEYS[number];
 export type Locks = Record<LockKey,boolean>;
 export const EMPTY_LOCKS:Locks = {eyes:false,ear:false,mouth:false,palette:false,bodyColor:false,eyeColor:false,mouthColor:false};
 export const ORIGINAL:Friend = {v:1,eyes:'524',ear:'classic',mouth:'flat',palette:'lemon',bodyColor:'#fedf25',eyeColor:'#f7f7f7',mouthColor:'#1e6b7d',inkColor:'#ff7b33'};
-export const INITIAL:Friend = {v:1,eyes:'3?8',ear:'classic',mouth:'smile',palette:'melon',bodyColor:'#a8c886',eyeColor:'#fff9e8',mouthColor:'#335e5a',inkColor:'#b96b39'};
+export const INITIAL:Friend = {v:1,eyes:'3?8',ear:'bear',mouth:'smile',palette:'melon',bodyColor:'#a8c886',eyeColor:'#fff9e8',mouthColor:'#335e5a',inkColor:'#b96b39'};
 export function paletteFor(id:string){return PALETTES.find(p=>p.id===id) ?? PALETTES[0];}
 export function isOriginal(f:Friend){return Object.keys(ORIGINAL).every(key=>f[key as keyof Friend]===ORIGINAL[key as keyof Friend]);}
 export function sameFriend(a:Friend,b:Friend){return Object.keys(ORIGINAL).every(key=>a[key as keyof Friend]===b[key as keyof Friend]);}
@@ -43,7 +45,7 @@ export function generateFriend(current:Friend,locks:Locks,rng:Rng=randomInt):{fr
  // The original has its own draw; normal combinations cannot add to its odds.
  if(isOriginal(f)){
   if(!locks.eyes)f.eyes='525';
-  else if(!locks.ear)f.ear='round';
+  else if(!locks.ear)f.ear='bear';
   else if(!locks.mouth)f.mouth='smile';
   else if(!locks.bodyColor)f.bodyColor=p.body[1];
   else if(!locks.eyeColor)f.eyeColor=p.eye[1];
@@ -62,7 +64,7 @@ export function validateFriend(value:unknown):Friend{
  if(f.v!==1)throw new Error('このバージョンのコードはまだ読み込めません。');
  const keys=Object.keys(ORIGINAL);
  if(Object.keys(f).some(k=>!keys.includes(k))||keys.some(k=>!(k in f)))throw new Error('コードの項目が足りないか、形式が違うようです。');
- if(typeof f.eyes!=='string'||!validEyes(f.eyes)||!EARS.includes(f.ear as Ear)||!MOUTHS.includes(f.mouth as Mouth))throw new Error('目やかたちの値が正しくありません。');
+ if(typeof f.eyes!=='string'||!validEyes(f.eyes)||![...EARS,...LEGACY_EARS].includes(f.ear as Ear)||!MOUTHS.includes(f.mouth as Mouth))throw new Error('目やかたちの値が正しくありません。');
  const p=PALETTES.find(p=>p.id===f.palette);
  if(!p||!(p.body as readonly unknown[]).includes(f.bodyColor)||!(p.eye as readonly unknown[]).includes(f.eyeColor)||!(p.mouth as readonly unknown[]).includes(f.mouthColor)||p.ink!==f.inkColor)throw new Error('パレットの色が正しくありません。');
  return Object.fromEntries(keys.map(k=>[k,f[k]])) as Friend;
