@@ -11,6 +11,7 @@ import { INITIAL, EMPTY_LOCKS, LOCK_KEYS, PALETTES, EARS, MOUTHS, EAR_LABELS, MO
 import type { Friend, LockKey, Locks } from '@/lib/friends';
 import { loadFriendRenderer } from '@/lib/render-friend';
 import type { FriendRenderer } from '@/lib/render-friend';
+import { version as appVersion } from '@/package.json';
 
 type Tool = {name:string;title:string;description:string;inputSchema:object;annotations:{readOnlyHint:boolean;untrustedContentHint:boolean};execute:(input:unknown)=>unknown};
 type ModelContext = {registerTool:(tool:Tool,options?:{signal?:AbortSignal})=>void|Promise<void>};
@@ -169,6 +170,6 @@ export default function Home(){
     <p className="rare-hint"><Sparkles size={15}/><span>固定なしでつくると、ごくまれに524本人が。<br/><span>毎回 1 / 4096 の確率で、あそびにきます。</span></span></p>
    </aside>
   </div>
-  <footer className="page-footer"><span>524と、まだ見ぬお友達。</span><span>MADE FOR LITTLE ENCOUNTERS</span></footer>
+  <footer className="page-footer"><span>524と、まだ見ぬお友達。 · ver{appVersion.replace(/\.0$/, '')}</span><span>MADE FOR LITTLE ENCOUNTERS</span></footer>
  </main>;
 }
