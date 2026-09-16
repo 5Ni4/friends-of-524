@@ -161,7 +161,7 @@ export default function Home(){
  }
 
  return <main className="maker-shell">
-  <header className="masthead"><a className="wordmark" href="/" aria-label="524のお友達メーカー"><img className="brand-mark" src="/assets/524-logo-v1.png" alt="" width={200} height={132}/><span className="wordmark-title"><span>お友達</span><span>メーカー</span></span></a><span className="edition">はじめましてを、ひとつ。</span></header>
+  <header className="masthead"><a className="wordmark" href="/" aria-label="524のお友達メーカー"><img className="brand-mark" src="/assets/524-logo-v1.png" alt="" width={200} height={132}/><span className="wordmark-title"><span>お友達</span><span>メーカー</span></span></a></header>
   <div className="workspace">
    <section className="play-column" aria-label="お友達をつくる">
     <div className="portrait-card">
