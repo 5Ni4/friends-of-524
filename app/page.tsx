@@ -228,6 +228,9 @@ export default function Home(){
     <p className="rare-hint"><Sparkles size={15}/><span>ランダムでホンモノの524が登場します（ 1 / 4096 の確率 ）</span></p>
    </aside>
   </div>
-  <footer className="page-footer"><span>524と、まだ見ぬお友達。</span><span className="footer-version">ver{appVersion.replace(/\.0$/, '')}</span></footer>
+  <footer className="page-footer">
+   <div className="footer-copy"><span>524と、まだ見ぬお友達。</span><p className="footer-rights">© 2026 5Ni4 / 524<br/>524および本サイトのコンテンツの著作権は作者に帰属します。</p></div>
+   <div className="footer-links"><a className="author-link" href="https://x.com/R5ni4" target="_blank" rel="noopener noreferrer" aria-label="作者について（Xで開く）">作者について<ArrowUpRight size={14}/></a><span className="footer-version">ver{appVersion.replace(/\.0$/, '')}</span></div>
+  </footer>
  </main>;
 }
