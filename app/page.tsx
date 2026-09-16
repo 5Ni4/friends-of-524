@@ -166,12 +166,10 @@ export default function Home(){
    <section className="play-column" aria-label="お友達をつくる">
     <div className="portrait-card">
     <div className={`stage ${transparent?'checker':''}`} style={background?{background}:undefined}>
-     <span className="stage-label">{original?'HELLO, 524!':'HELLO, FRIEND!'}</span>
      <canvas key={motionKey} ref={canvasRef} width={1024} height={1024} className={`friend-canvas ${motionKey?'arriving':''}`} role="img" aria-label={`ひとみが${friend.eyes}、みみのかたちが${EAR_LABELS[friend.ear]}、くちのかたちが${MOUTH_LABELS[friend.mouth]}のお友達`}/>
      {!renderer&&!assetError&&<p className="asset-state">お友達をよんでいます…</p>}
      {assetError&&<p className="asset-state error" role="alert">{assetError}</p>}
      {encounter&&<div className="rare-notice" role="status"><Sparkles size={18}/>524があそびにきた！</div>}
-     <span className="stage-corner">524 FRIENDS CLUB</span>
     </div>
     <div className="generate-row"><Button className="make-button" disabled={!renderer||!!assetError||allLocked} onClick={generate}><Shuffle/>お友達をつくる</Button><Button className="undo-button" variant="outline" disabled={!state.previous} onClick={undo} aria-label="ひとつ前に戻す" title="ひとつ前に戻す"><Undo2/></Button></div>
     <p className="generation-hint">{allLocked?'全部固定中。どこかの固定をはずすと、またつくれるよ。':'気に入ったところを固定して、もうひとり。'}</p>

@@ -128,6 +128,12 @@
 - `npx tsc --noEmit` と `npm run build` に合格。`git diff --check` も合格。
 - ビルド出力にキャッチコピーが含まれず、著作権表記と `https://x.com/R5ni4` が含まれることを確認。
 
+## ver1.3.3：表示ラベルの整理（2026-09-17）
+
+- キャラクター表示エリアの「HELLO, FRIEND!」「HELLO, 524!」「524 FRIENDS CLUB」を削除した。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs`、`npx tsc --noEmit`、`npm run build`、`git diff --check` に合格。
+- ビルド出力に対象の表示ラベルが含まれないことを確認。
+
 ## ver1.3.2：ヘッダーの整理（2026-09-17）
 
 - ヘッダー右上のキャッチコピーを削除し、ロゴとサイト名だけを残した。
