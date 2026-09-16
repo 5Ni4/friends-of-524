@@ -128,6 +128,12 @@
 - `npx tsc --noEmit` と `npm run build` に合格。`git diff --check` も合格。
 - ビルド出力にキャッチコピーが含まれず、著作権表記と `https://x.com/R5ni4` が含まれることを確認。
 
+## ver1.3.5：タイトルの強調（2026-09-17）
+
+- ヘッダーの「お友達メーカー」を大きく太くし、黄色の手描き風アクセントを追加した。
+- 1行表示とスマホ向けの可読性を維持した。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs`、`npx tsc --noEmit`、`npm run build`、`git diff --check` に合格。
+
 ## ver1.3.4：サイト名の1行表示（2026-09-17）
 
 - ヘッダーのサイト名を折り返さず「お友達メーカー」と1行で表示するようにした。
