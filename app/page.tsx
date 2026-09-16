@@ -12,7 +12,6 @@ import { INITIAL, EMPTY_LOCKS, LOCK_KEYS, PALETTES, EARS, MOUTHS, EAR_LABELS, MO
 import type { Friend, LockKey, Locks } from '@/lib/friends';
 import { loadFriendRenderer } from '@/lib/render-friend';
 import type { FriendRenderer } from '@/lib/render-friend';
-import { version as appVersion } from '@/package.json';
 import { createFriendPng, canShareImage, sharePreparedImage, canCopyImage, copyPreparedImage } from '@/lib/share-image';
 import type { PreparedImage } from '@/lib/share-image';
 
@@ -229,7 +228,7 @@ export default function Home(){
   </div>
   <footer className="page-footer">
    <div className="footer-copy"><p className="footer-rights"><span className="copyright-line">© 2026 R-524</span>524および本サイトのコンテンツの著作権は作者に帰属します。</p></div>
-   <div className="footer-links"><a className="author-link" href="https://x.com/R5ni4" target="_blank" rel="noopener noreferrer" aria-label="作者について（Xで開く）">作者について<ArrowUpRight size={14} aria-hidden="true"/></a><span className="footer-version">ver{appVersion.replace(/\.0$/, '')}</span></div>
+   <div className="footer-links"><a className="author-link" href="https://x.com/R5ni4" target="_blank" rel="noopener noreferrer" aria-label="作者について（Xで開く）">作者について<ArrowUpRight size={14} aria-hidden="true"/></a></div>
   </footer>
  </main>;
 }
