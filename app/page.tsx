@@ -229,7 +229,7 @@ export default function Home(){
    </aside>
   </div>
   <footer className="page-footer">
-   <div className="footer-copy"><span>524と、まだ見ぬお友達。</span><p className="footer-rights">© 2026 5Ni4 / 524<br/>524および本サイトのコンテンツの著作権は作者に帰属します。</p></div>
+   <div className="footer-copy"><p className="footer-rights"><span className="copyright-line">© 2026 5Ni4 / 524</span>524および本サイトのコンテンツの著作権は作者に帰属します。</p></div>
    <div className="footer-links"><a className="author-link" href="https://x.com/R5ni4" target="_blank" rel="noopener noreferrer" aria-label="作者について（Xで開く）">作者について<ArrowUpRight size={14}/></a><span className="footer-version">ver{appVersion.replace(/\.0$/, '')}</span></div>
   </footer>
  </main>;

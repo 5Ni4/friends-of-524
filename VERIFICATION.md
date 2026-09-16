@@ -120,3 +120,10 @@
 - `npx tsc --noEmit` と `npm run build` に合格。`git diff --check` も合格。
 - 公開前のソースを確認し、既知の秘密情報パターンは検出されなかった。
 - 実ブラウザでのフッター表示とXリンクのクリック確認は未実施。
+
+## ver1.3.1：フッターの整理（2026-09-17）
+
+- フッターのキャッチコピーを削除し、著作権表記・作者リンク・バージョン表示を保持。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs` は27件すべて合格。
+- `npx tsc --noEmit` と `npm run build` に合格。`git diff --check` も合格。
+- ビルド出力にキャッチコピーが含まれず、著作権表記と `https://x.com/R5ni4` が含まれることを確認。
