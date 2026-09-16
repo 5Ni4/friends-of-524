@@ -128,6 +128,12 @@
 - `npx tsc --noEmit` と `npm run build` に合格。`git diff --check` も合格。
 - ビルド出力にキャッチコピーが含まれず、著作権表記と `https://x.com/R5ni4` が含まれることを確認。
 
+## ver1.3.4：サイト名の1行表示（2026-09-17）
+
+- ヘッダーのサイト名を折り返さず「お友達メーカー」と1行で表示するようにした。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs`、`npx tsc --noEmit`、`npm run build`、`git diff --check` に合格。
+- ビルド出力にサイト名が1行のテキストとして含まれることを確認。
+
 ## ver1.3.3：表示ラベルの整理（2026-09-17）
 
 - キャラクター表示エリアの「HELLO, FRIEND!」「HELLO, 524!」「524 FRIENDS CLUB」を削除した。
