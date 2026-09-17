@@ -227,7 +227,7 @@ export default function Home(){
    </aside>
   </div>
   <footer className="page-footer">
-   <div className="footer-copy"><p className="footer-rights"><span className="copyright-line">© R-524</span>524および本サイトのコンテンツの著作権は作者に帰属します。</p></div>
+   <div className="footer-copy"><p className="footer-rights"><span className="copyright-line">© R-524</span>524および本サイトのコンテンツの著作権は作者（<a className="author-inline-link" href="https://x.com/R5ni4" target="_blank" rel="noopener noreferrer">@R5ni4</a>）に帰属します。</p></div>
    <div className="footer-links"><a className="author-link" href="https://x.com/R5ni4" target="_blank" rel="noopener noreferrer" aria-label="作者について（Xで開く）">作者について<ArrowUpRight size={14} aria-hidden="true"/></a></div>
   </footer>
  </main>;

@@ -1,3 +1,8 @@
+## ver1.3.9：作者のXユーザー名リンク（2026-09-17）
+
+- フッターの著作権文を「作者（@R5ni4）に帰属します」とし、`@R5ni4` のみ `https://x.com/R5ni4` へのリンクにした。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs`、`npx tsc --noEmit`、`npm run build`、`git diff --check` に合格。
+
 ## ver1.3.7：タイトルとフッターの整理（2026-09-17）
 
 - ヘッダーの「お友達メーカー」を大きくし、白い不定形カードと黄色のアクセントを追加した。
