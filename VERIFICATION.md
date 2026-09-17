@@ -165,3 +165,7 @@
 - `node --test tests/friends.test.mjs tests/share-image.test.mjs` は27件すべて合格。
 - `npx tsc --noEmit` と `npm run build` に合格。`git diff --check` も合格。
 - ビルド出力に「はじめましてを、ひとつ。」が含まれないことを確認。
+## ver1.3.8：コピーライト年の削除（2026-09-17）
+
+- フッターの表記を `© R-524` に変更し、年の表示を削除した。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs`、`npx tsc --noEmit`、`npm run build`、`git diff --check` に合格。
