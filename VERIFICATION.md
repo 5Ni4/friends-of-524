@@ -1,3 +1,9 @@
+## ver1.3.10：作者ボタン削除と静的公開設定（2026-09-17）
+
+- フッターの「作者について」ボタンを削除し、著作権文内の `@R5ni4` リンクを保持した。
+- Cloudflare Pages向けの静的エクスポート設定を追加した。
+- `node --test tests/friends.test.mjs tests/share-image.test.mjs`、`npx tsc --noEmit`、`npm run build`、`git diff --check` に合格。
+
 ## ver1.3.9：作者のXユーザー名リンク（2026-09-17）
 
 - フッターの著作権文を「作者（@R5ni4）に帰属します」とし、`@R5ni4` のみ `https://x.com/R5ni4` へのリンクにした。
