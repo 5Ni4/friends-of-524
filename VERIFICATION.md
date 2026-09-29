@@ -1,3 +1,9 @@
+## ver1.3.12：ボタンのホバーアニメーション（2026-09-30）
+
+- 主役ボタンの飛び出すホバー、各操作ボタンの軽い浮上、押下時の沈み込みを追加。ホバーはポインター端末に限定し、既存の `prefers-reduced-motion` 設定を維持。
+- `npm run build` に合格。ビルド後のCSSに `make-button-pop` とホバー・押下スタイルが含まれることを確認。
+- `git diff --check` に合格。
+
 ## ver1.3.11：OGP画像と共有プレビュー（2026-09-30）
 
 - `npm run build` に合格。静的出力 `dist/client/index.html` にOpen Graphのタイトル・説明・URL・画像と、X用 `summary_large_image` の各メタタグが含まれることを確認。

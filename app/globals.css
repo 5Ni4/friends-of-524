@@ -68,6 +68,11 @@ a{color:inherit;text-decoration:none}h1,h2,h3,p{margin:0}button svg,a svg{flex-s
 .rare-hint{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted-foreground);margin-top:22px;line-height:1.8}.rare-hint>svg{flex-shrink:0;margin-top:4px;color:var(--teal)}.rare-hint span span{font-size:12px}
 .page-footer{padding:22px 6px 30px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;border-top:2px dotted #b5d1d0;font-size:14px;color:var(--ink)}.footer-copy{display:grid;gap:4px;min-width:0}.footer-rights{max-width:650px;font-size:12px;line-height:1.7;color:var(--ink)}.copyright-line{display:block;margin-bottom:3px;color:var(--ink);font-size:14px;font-weight:750}.author-inline-link{color:var(--teal);font-weight:750;text-decoration:underline;text-underline-offset:2px}.author-inline-link:hover{color:var(--orange)}
 .arriving{animation:arrive .35s ease-out}@keyframes arrive{0%{opacity:.65;scale:.96;translate:0 5px}100%{opacity:1;scale:1;translate:0 0}}
+button[data-slot=button]:not(:disabled),.share-link{transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,background-color .18s ease}
+@media(hover:hover) and (pointer:fine){button[data-slot=button]:not(:disabled):hover,.share-link:hover{transform:translateY(-2px) scale(1.015)}.make-button[data-slot=button]:not(:disabled):hover{animation:make-button-pop .28s cubic-bezier(.2,.8,.4,1) both;transform:translateY(-5px) scale(1.035);box-shadow:0 8px 0 var(--teal)}}
+button[data-slot=button]:not(:disabled):active,.share-link:active{transform:translateY(1px) scale(.98)}
+.make-button[data-slot=button]:not(:disabled):active{animation:none;transform:translateY(2px) scale(.98);box-shadow:0 2px 0 var(--teal)}
+@keyframes make-button-pop{0%{transform:translateY(0) scale(1)}65%{transform:translateY(-7px) scale(1.05)}100%{transform:translateY(-5px) scale(1.035)}}
 @media(max-width:1000px){
 .maker-shell{padding:0 24px}.workspace{grid-template-columns:minmax(0,1.1fr) minmax(360px,1fr);gap:22px}.control-panel{padding:22px}.portrait-card{padding:14px}.stage{min-width:0;max-width:none}.mouth-options{gap:5px}.color-row{gap:8px}.color-options[data-slot=radio-group]{gap:9px}.palette-options[data-slot=radio-group]{gap:12px}.palette-disc{width:38px;height:38px}.panel-top h2{font-size:21px}.unlock-all[data-slot=button]{padding:6px}
 }
