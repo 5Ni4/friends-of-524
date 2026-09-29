@@ -1,3 +1,9 @@
+## ver1.3.11：OGP画像と共有プレビュー（2026-09-30）
+
+- `npm run build` に合格。静的出力 `dist/client/index.html` にOpen Graphのタイトル・説明・URL・画像と、X用 `summary_large_image` の各メタタグが含まれることを確認。
+- `dist/client/og-image.png` が出力され、画像サイズは1734×907px。
+- `git diff --check` に合格。
+
 ## ver1.3.10：作者ボタン削除と静的公開設定（2026-09-17）
 
 - フッターの「作者について」ボタンを削除し、著作権文内の `@R5ni4` リンクを保持した。
