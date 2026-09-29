@@ -3,6 +3,7 @@
 - `npm run build` に合格。静的出力 `dist/client/index.html` にOpen Graphのタイトル・説明・URL・画像と、X用 `summary_large_image` の各メタタグが含まれることを確認。
 - `dist/client/og-image.png` が出力され、画像サイズは1734×907px。
 - `git diff --check` に合格。
+- Cloudflare Pagesの本番反映（deployment `a717697f-8ff6-4172-8f67-3a772de3041d`、commit `27e9c85`）後、公開ページのOGP/Xタグと `og-image.png` のHTTP 200を確認。
 
 ## ver1.3.10：作者ボタン削除と静的公開設定（2026-09-17）
 
