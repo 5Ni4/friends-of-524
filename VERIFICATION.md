@@ -3,6 +3,7 @@
 - 主役ボタンの飛び出すホバー、各操作ボタンの軽い浮上、押下時の沈み込みを追加。ホバーはポインター端末に限定し、既存の `prefers-reduced-motion` 設定を維持。
 - `npm run build` に合格。ビルド後のCSSに `make-button-pop` とホバー・押下スタイルが含まれることを確認。
 - `git diff --check` に合格。
+- Cloudflare Pages本番（deployment `cc8b0411-7448-4635-abca-16cdf010dbed`、commit `41d896b`）で公開CSSにも同じホバー・押下・視差軽減スタイルが含まれることを確認。
 
 ## ver1.3.11：OGP画像と共有プレビュー（2026-09-30）
 
